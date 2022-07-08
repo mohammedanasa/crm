@@ -21,13 +21,14 @@ def products(request):
 
 def customer(request, pk):
     customer = Customer.objects.get(id=pk)
-    orders = Order.objects.all()
+    orders =  Order.objects.all()
     order_count = orders.count()
     context = {'customer':customer, 'orders':orders, 'order_count':order_count }
     return render(request,'accounts/customers.html',context)
 
-def createOrder(request):
-    form = OrderForm()
+def createOrder(request, pk):
+    customer = Customer.objects.get(id=pk)
+    form = OrderForm(initial={'customer':customer})
     if request.method == 'POST':
         #print('Printing Post:', request.POST)
         form = OrderForm(request.POST)
@@ -51,4 +52,15 @@ def updateOrder(request, pk):
     context = {'form': form}
 
     return render(request, 'accounts/order_form.html', context)
+
+def deleteOrder(request, pk):
+
+    order = Order.objects.get(id=pk)
+    if request.method == 'POST':
+        order.delete()
+        return redirect('/')
+
+    context = {'item':order}
+    return render(request, 'accounts/delete.html', context)
+
 
