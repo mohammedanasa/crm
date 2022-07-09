@@ -3,6 +3,7 @@ from django.http import HttpResponse
 
 from accounts.models import Customer, Product, Order
 from .forms import OrderForm 
+from .filters import OrderFilter
 
 
 def home(request):
@@ -22,8 +23,10 @@ def products(request):
 def customer(request, pk):
     customer = Customer.objects.get(id=pk)
     orders =  Order.objects.all()
+    myFilter = OrderFilter(request.GET, queryset = orders)
+    orders = myFilter.qs
     order_count = orders.count()
-    context = {'customer':customer, 'orders':orders, 'order_count':order_count }
+    context = {'customer':customer, 'orders':orders, 'order_count':order_count, 'myFilter':myFilter }
     return render(request,'accounts/customers.html',context)
 
 def createOrder(request, pk):
